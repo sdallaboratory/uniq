@@ -1,10 +1,10 @@
 import { autoInjectable } from 'tsyringe';
 import { JSDOM } from 'jsdom';
 import _ from 'lodash';
-import { WeekInfo } from '../models/schedule.iterfaces';
 import ParserService from './parser.service';
 import { environment } from '../environment';
-import { Group } from '../models/group';
+import { WeekInfo } from '@solovevserg/uniq-shared/dist/models/schedule.iterfaces';
+import { Group } from '@solovevserg/uniq-shared/dist/models/group';
 
 @autoInjectable()
 export default class ScheduleService {

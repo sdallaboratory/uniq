@@ -1,11 +1,11 @@
 import 'reflect-metadata';
 import { container } from 'tsyringe';
-import ScheduleService from './service/schedule.service';
+import ScheduleService from './services/schedule.service';
 import { MongoClient } from 'mongodb';
 import './polyfills/fetch';
-import { Lesson, LessonRaw } from './models/lesson';
-import { Group } from './models/group';
 import _ from 'lodash';
+import { Group } from '@solovevserg/uniq-shared/dist/models/group';
+import { LessonRaw, Lesson } from '@solovevserg/uniq-shared/dist/models/lesson';
 
 function getDate() {
   const now = new Date();
@@ -71,7 +71,7 @@ function groupByWith<T, TComparable>(collection: T[], project: (elem: T) => TCom
   const map = new Map<T, TComparable>(_.map(collection, elem => [elem, project(elem)]));
   const groups = [] as T[][];
   for (const [elem, index] of collection.map((elem, index) => [elem, index] as const)) {
-    if(index % 100 === 0) {
+    if (index % 100 === 0) {
       console.log(index);
     }
     const comparable = map.get(elem)!;

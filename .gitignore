@@ -1,1 +1,20 @@
-.data/
+# compiled output
+**/node_modules
+
+# OS
+.DS_Store
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# temporary data
+temp
+.data
+
+# temporary cache
+**/.yarn/cache
+**/.yarn/install-state.gz

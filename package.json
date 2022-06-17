@@ -1,0 +1,16 @@
+{
+  "packageManager": "yarn@3.2.1",
+  "scripts": {
+    "dev": "yarn workspaces foreach -pi run dev",
+    "build": "yarn workspaces foreach -pti run build"
+  },
+  "author": "Sergei Solovev (http://solovevserg.github.io/), Arina Kalinina",
+  "description": "Handy schedule app for BMSTU students",
+  "license": "MIT",
+  "workspaces": {
+    "packages": [
+      "collector",
+      "shared"
+    ]
+  }
+}

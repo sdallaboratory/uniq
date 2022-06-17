@@ -3,7 +3,7 @@ import { DayOfWeek } from "./day-of-week";
 import { University } from "./university";
 import { WeekType } from "./week-type";
 
-export interface LessonBase {
+interface LessonBase {
     
     // When
     weekType: WeekType | WeekType[];

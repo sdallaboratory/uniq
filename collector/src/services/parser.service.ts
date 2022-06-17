@@ -1,10 +1,10 @@
 import _, { add } from 'lodash';
-import { isNotNill } from '../utils/is-not-nill';
-import { timeSlotMap } from '../utils/time-slot-map';
-import { timeRange } from '../models/time/time-range';
-import { Group } from '../models/group';
-import { Lesson, LessonRaw } from '../models/lesson';
-import { WeekType } from '../models/week-type';
+import { isNotNill } from '@solovevserg/uniq-shared/dist/utils/is-not-nill';
+import { timeSlotMap } from '@solovevserg/uniq-shared/dist/utils/time-slot-map';
+import { timeRange } from '@solovevserg/uniq-shared/dist/models/time/time-range';
+import { Group } from '@solovevserg/uniq-shared/dist/models/group';
+import { Lesson, LessonRaw } from '@solovevserg/uniq-shared/dist/models/lesson';
+import { WeekType } from '@solovevserg/uniq-shared/dist/models/week-type';
 
 export default class ParserService {
 
@@ -85,7 +85,7 @@ export default class ParserService {
                 const timeRange = timeRangeElement.textContent! as timeRange;
                 const slot = timeSlotMap.direct(timeRange);
                 return [
-                    { ...parseLessonCell(timeRangeElement.nextElementSibling!), weekType: 'зн' as WeekType},
+                    { ...parseLessonCell(timeRangeElement.nextElementSibling!), weekType: 'зн' as WeekType },
                     { ...parseLessonCell(elem.lastElementChild!), weekType: 'чс' as WeekType },
                 ].filter(lesson => lesson.name)
                     .map(lesson => ({ ...lesson, slot }));
