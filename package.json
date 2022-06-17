@@ -1,6 +1,7 @@
 {
   "packageManager": "yarn@3.2.1",
   "scripts": {
+    "start": "yarn build && yarn dev",
     "dev": "yarn workspaces foreach -pi run dev",
     "build": "yarn workspaces foreach -pti run build"
   },
@@ -9,8 +10,8 @@
   "license": "MIT",
   "workspaces": {
     "packages": [
-      "collector",
-      "shared"
+      "shared",
+      "collector"
     ]
   }
 }
