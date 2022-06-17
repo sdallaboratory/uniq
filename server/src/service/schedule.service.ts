@@ -1,43 +1,45 @@
 import { autoInjectable } from 'tsyringe';
 import { JSDOM } from 'jsdom';
 import _ from 'lodash';
-import { GroupScheduleUri, WeekInfo } from '../interface/schedule.iterfaces';
+import { WeekInfo } from '../models/schedule.iterfaces';
 import ParserService from './parser.service';
 import { environment } from '../environment';
+import { Group } from '../models/group';
 
 @autoInjectable()
 export default class ScheduleService {
-
-    private groupUris?: GroupScheduleUri[];
 
     constructor(
         private parser: ParserService,
     ) { }
 
-    async getGroupUri(groupName: string) {
-        const groupsUris = await this.getGroupsUris();
-        const group = groupsUris.find(group => group.name === groupName) || null;
-        return group && group.uri;
-    }
+    // TODO: Remove this code
+    // async getGroupUri(groupName: string) {
+    //     const groupsUris = await this.getGroupsUris();
+    //     const group = groupsUris.find(group => group.name === groupName);
+    //     return group?.uri;
+    // }
 
     async getGroupsUris() {
-        if (this.groupUris) {
-            return this.groupUris;
-        }
         const baseUri = environment.BMSTU_ORIGIN;
         const uri = `${baseUri}/schedule/list`;
         const resp = await fetch(uri).then(r => r.text());
         const {
             window: { document },
         } = new JSDOM(resp);
-        const groupsUris: GroupScheduleUri[] = this.parser.parseGroupsUris(baseUri, document);
-        this.groupUris = groupsUris;
-        setTimeout(() => (this.groupUris = undefined), 30 * 60 * 1000);
-        return groupsUris;
+        const groups: Group[] = this.parser.parseGroupsUris(baseUri, document);
+        return groups;
+    }
+    
+    async getSchedule(uri: string) {
+        const html = await fetch(uri).then(r => r.text());
+        const document = new JSDOM(html).window.document;
+        const groupSchedule = this.parser.parseGroupSchedule(document);
+        return groupSchedule;
     }
 
+    // TODO: Refactor getting week logic
     private currentWeek?: WeekInfo;
-
     async getCurrentWeek() {
         if (this.currentWeek) {
             return this.currentWeek;
@@ -49,7 +51,11 @@ export default class ScheduleService {
                 weekName: 'Не учебная',
             };
         }
-        const resp = await fetch(groupGroupsUris[0].uri).then(r => r.text());
+        const group = groupGroupsUris.find(group => group.uri !== undefined) as Required<Group> | undefined; // TODO: make typing more implicit
+        if (!group) {
+            throw new Error('There are no groups with scedule links');
+        }
+        const resp = await fetch(group.uri).then(r => r.text());
         const {
             window: { document },
         } = new JSDOM(resp);
@@ -57,15 +63,9 @@ export default class ScheduleService {
         this.currentWeek = week;
         setTimeout(() => (this.currentWeek = undefined), 60 * 1000);
         return week;
-    } 
-    
-    async getSchedule(uri: string) {
-        const html = await fetch(uri).then(r => r.text());
-        const document = new JSDOM(html).window.document;
-        const groupSchedule = this.parser.parseGroupSchedule(document);
-        return groupSchedule;
     }
 
+    // TODO: Move this code to another service connected to a DB
     async searchGroups(query: string, limit: number) {
         const links = await this.getGroupsUris();
         const groups = links.map(link => link.name);

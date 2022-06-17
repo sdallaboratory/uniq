@@ -1,12 +1,16 @@
-import { GroupScheduleUri, DaySchedule, GroupSchedule, Lesson, WeekType } from '../interface/schedule.iterfaces';
 import _, { add } from 'lodash';
 import { isNotNill } from '../utils/is-not-nill';
+import { timeSlotMap } from '../utils/time-slot-map';
+import { timeRange } from '../models/time/time-range';
+import { Group } from '../models/group';
+import { Lesson, LessonRaw } from '../models/lesson';
+import { WeekType } from '../models/week-type';
 
 export default class ParserService {
 
     public parseGroupsUris(baseUri: string, document: Document) {
         const anchors = document.querySelectorAll('.list-group .panel .btn-group a');
-        const groupsUris: GroupScheduleUri[] = [...anchors].map(anchor => ({
+        const groupsUris: Group[] = [...anchors].map(anchor => ({
             uri: `${baseUri}${anchor.getAttribute('href')}`,
             name: anchor.textContent!.split(/\s/).join(''),
         }));
@@ -39,10 +43,10 @@ export default class ParserService {
     public parseGroupSchedule(document: Document) {
         const scheduleHeader = document.querySelector('h1')!.textContent!;
         // console.log(scheduleHeader);
-        const {group} = this.groupRegex.exec(scheduleHeader)?.groups!;
+        const { group } = this.groupRegex.exec(scheduleHeader)?.groups!;
         return [...document.querySelectorAll('.hidden-xs tbody')].flatMap(
             day => this.parseDaySchedule(day as HTMLBodyElement)
-        ).map(lesson => ({ ...lesson, groups: [group] }));
+        ).map(lesson => ({ ...lesson, groups: [group] } as LessonRaw));
     }
 
     private parseDaySchedule(tbody: Element,) {
@@ -54,16 +58,6 @@ export default class ParserService {
     private parseDayName(tbody: Element) {
         return tbody.querySelector('strong')!.textContent!.toLowerCase();
     }
-
-    private readonly map = new Map([
-        ['08:30 - 10:05', 1],
-        ['10:15 - 11:50', 2],
-        ['12:00 - 13:35', 3],
-        ['13:50 - 15:25', 4],
-        ['15:40 - 17:15', 5],
-        ['17:25 - 19:00', 6],
-        ['19:10 - 20:45', 7],
-    ]);
 
     private parseDayLessonsTable(tbody: Element) {
 
@@ -88,14 +82,14 @@ export default class ParserService {
             // .filter(tr => tr.querySelector('td > span')?.textContent)
             .flatMap(elem => {
                 const timeRangeElement = elem.firstElementChild!;
-                const timeRange = timeRangeElement.textContent!;
-                const slot = this.map.get(timeRange);
+                const timeRange = timeRangeElement.textContent! as timeRange;
+                const slot = timeSlotMap.direct(timeRange);
                 return [
-                    {...parseLessonCell(timeRangeElement.nextElementSibling!), weekType: 'зн'},
-                    {...parseLessonCell(elem.lastElementChild!), weekType: 'чс'},
+                    { ...parseLessonCell(timeRangeElement.nextElementSibling!), weekType: 'зн' as WeekType},
+                    { ...parseLessonCell(elem.lastElementChild!), weekType: 'чс' as WeekType },
                 ].filter(lesson => lesson.name)
-                .map(lesson => ({ ...lesson, slot }));
-            }).filter(isNotNill) as Lesson[];
+                    .map(lesson => ({ ...lesson, slot }));
+            }).filter(isNotNill);
     }
 
 }
