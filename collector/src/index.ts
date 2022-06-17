@@ -3,9 +3,17 @@ import { container } from 'tsyringe';
 import ScheduleService from './services/schedule.service';
 import { MongoClient } from 'mongodb';
 import './polyfills/fetch';
-import _ from 'lodash';
+import _, { map } from 'lodash';
 import { Group } from '@solovevserg/uniq-shared/dist/models/group';
-import { LessonRaw, Lesson } from '@solovevserg/uniq-shared/dist/models/lesson';
+import { LessonRaw, Lesson } from '@solovevserg/uniq-shared/dist/models/lesson'
+
+// TODO:
+// - count classrooms collection
+// - count groups collection
+// - move to Nest
+// - set up run logic (collect on start up and on interval)
+// - 
+
 
 function getDate() {
   const now = new Date();
@@ -43,10 +51,37 @@ async function main() {
   const lessonsRaw = await lessonsRawCollection.find().toArray();
   console.log(lessonsRaw.length);
 
-  const lessons = mergeLessonsRaw(lessonsRaw);
   const lessonsCollection = db.collection<Lesson>('lessons');
-  await lessonsCollection.drop();
-  await lessonsCollection.insertMany(lessons);
+  if (!await lessonsCollection.countDocuments()) {
+    const lessons = mergeLessonsRaw(lessonsRaw);
+    // await lessonsCollection.drop();
+    await lessonsCollection.insertMany(lessons);
+  }
+
+  const teachersCollection = db.collection('teachers');
+  const lessons = await lessonsCollection.find().toArray();
+
+  const teachers = _(lessons)
+    .map(lesson => lesson.groups.map(group => lesson.teacher.map(teacher => [teacher, group] as const)))
+    .flatten()
+    .flatten()
+    .tap(a => console.log(a.length))
+    .groupBy(([teacher]) => teacher)
+    .tap(a => console.log(a.length))
+    .toPairs()
+    .map(([name, groups]) => ({
+      name,
+      groups: _.uniq(groups.map(([, group]) => group)),
+    }))
+    .tap(a => console.log(a.length))
+    .value();
+
+  console.log(teachers);
+
+
+  await teachersCollection.drop();
+  await teachersCollection.insertMany(teachers);
+
   console.log('Done');
   await mongo.close();
 }
