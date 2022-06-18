@@ -1,14 +1,14 @@
 # Uniq
-ru | [en (draft)](/README/README.en.md)
 
-Удобное приложение расписаний для студентов МГТУ 
+ru | [en (draft)](docs/README/README.en.md)
 
+Удобное приложение расписаний для студентов МГТУ
 
 ## План работы
 
 1. Инициализировать проект
-   1. Настроить все 4 проекта
-   2. Добавить Docker Compose с 4 сервисами (collector, api, client, mongo)
+   1. Настроить все 4 проекта (shared, collector, api, client)
+   2. Добавить Docker Compose с 4 сервисами (collector, api, client, mongo, mongo-express)
 2. Реализовать сервис для сбора данных
    1. Настроить TypeScript сервер и реализовать там запуск job'ы по таймеру
    2. Собирать данные с официальной страницы
