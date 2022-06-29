@@ -2,9 +2,9 @@ import { autoInjectable } from 'tsyringe';
 import { JSDOM } from 'jsdom';
 import _ from 'lodash';
 import ParserService from './parser.service';
-import { environment } from '../environment';
 import { WeekInfo } from '@solovevserg/uniq-shared/dist/models/schedule.iterfaces';
 import { Group } from '@solovevserg/uniq-shared/dist/models/group';
+import { environment } from '@solovevserg/uniq-shared/dist/environemnt';
 
 @autoInjectable()
 export default class ScheduleService {
@@ -13,24 +13,30 @@ export default class ScheduleService {
         private parser: ParserService,
     ) { }
 
-    // TODO: Remove this code
-    // async getGroupUri(groupName: string) {
-    //     const groupsUris = await this.getGroupsUris();
-    //     const group = groupsUris.find(group => group.name === groupName);
-    //     return group?.uri;
-    // }
+    /**
+     * Loads HTML document from network and parses it.
+     * @param path E.g. `/schedule/list`.
+     * @param origin Default `environment.BMSTU_ORIGIN`.
+     * @returns Parsed HTML page as Document object.
+     */
+    private async loadHtml(path: string, origin = environment.BMSTU_ORIGIN) {
+        if(path[0] !== '/') {
+            throw new Error(`path must start with leading slash. E.g '/shcedule/list'`);
+        }
+        const uri = `${origin}${path}`;
+        const response = await fetch(uri);
+        const html = await response.text();
+        const dom = new JSDOM(html);
+        return dom.window.document;
+    }
 
-    async getGroupsUris() {
-        const baseUri = environment.BMSTU_ORIGIN;
-        const uri = `${baseUri}/schedule/list`;
-        const resp = await fetch(uri).then(r => r.text());
-        const {
-            window: { document },
-        } = new JSDOM(resp);
-        const groups: Group[] = this.parser.parseGroupsUris(baseUri, document);
+    async loadGroups() {
+        const path = `/schedule/list`;
+        const document = await this.loadHtml(path);
+        const groups = this.parser.parseGroups(document);
         return groups;
     }
-    
+
     async getSchedule(uri: string) {
         const html = await fetch(uri).then(r => r.text());
         const document = new JSDOM(html).window.document;
@@ -44,18 +50,18 @@ export default class ScheduleService {
         if (this.currentWeek) {
             return this.currentWeek;
         }
-        const groupGroupsUris = await this.getGroupsUris();
+        const groupGroupsUris = await this.loadGroups();
         if (!groupGroupsUris.length) {
             return {
                 number: 0,
                 weekName: 'Не учебная',
             };
         }
-        const group = groupGroupsUris.find(group => group.uri !== undefined) as Required<Group> | undefined; // TODO: make typing more implicit
+        const group = groupGroupsUris.find(group => group.path !== undefined) as Required<Group> | undefined; // TODO: make typing more implicit
         if (!group) {
             throw new Error('There are no groups with scedule links');
         }
-        const resp = await fetch(group.uri).then(r => r.text());
+        const resp = await fetch(group.path).then(r => r.text());
         const {
             window: { document },
         } = new JSDOM(resp);
@@ -67,7 +73,7 @@ export default class ScheduleService {
 
     // TODO: Move this code to another service connected to a DB
     async searchGroups(query: string, limit: number) {
-        const links = await this.getGroupsUris();
+        const links = await this.loadGroups();
         const groups = links.map(link => link.name);
         const matched = _.take(
             groups.filter(group => group.includes(query)),

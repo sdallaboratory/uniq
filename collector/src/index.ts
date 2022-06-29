@@ -1,121 +1,97 @@
 import 'reflect-metadata';
-import { container } from 'tsyringe';
-import ScheduleService from './services/schedule.service';
-import { MongoClient } from 'mongodb';
+import { container, InjectionToken } from 'tsyringe';
 import './polyfills/fetch';
-import _, { map } from 'lodash';
-import { Group } from '@solovevserg/uniq-shared/dist/models/group';
-import { LessonRaw, Lesson } from '@solovevserg/uniq-shared/dist/models/lesson'
+import { CollectGroupsHandler } from './handlers.ts/collect-groups.handler';
+import { MongoService } from './services/mongo.service';
+import { environment } from '@solovevserg/uniq-shared/dist/environemnt';
+import { CollectGroupsScheduleHandler } from './handlers.ts/collect-groups-schedule.handler';
+import { MergeLessonsHandler } from './handlers.ts/merge-lessons.handler';
+import { Handler } from './handlers.ts/handler.interface';
+import { log } from '@solovevserg/uniq-shared/dist/logging/log';
 
-// TODO:
-// - count classrooms collection
-// - count groups collection
-// - move to Nest
-// - set up run logic (collect on start up and on interval)
-// - 
-
-
-function getDate() {
-  const now = new Date();
-  let year = now.getFullYear();
-  let month = now.getMonth() + 1; // TODO: Add leading zeroes
-  let day = now.getDate(); // TODO: Add leading zeroes
-  return `${year}-${month}-${day}`;
-}
+const handlers = [
+  CollectGroupsHandler,
+  CollectGroupsScheduleHandler,
+  MergeLessonsHandler,
+] as InjectionToken<Handler>[];
 
 async function main() {
-  const schedule = container.resolve(ScheduleService);
-  const mongo = await new MongoClient('mongodb://localhost:27018').connect();
-  // const date = getDate();
-
-  const date = '2022-5-12';
-  const db = mongo.db(date);
-  // await db.dropDatabase(); // TODO: Remove after data merge logic is implemented
-
-  // const groups = await schedule.getGroupsUris();
-  // const groupsCollection = db.collection<Group>('groups');
-  // await groupsCollection.insertMany(groups);
-
-  const lessonsRawCollection = db.collection<LessonRaw>('lessons-row'); // TODO: Fix DB name
-  // const withUris = groups
-  //   .filter(group => group.uri !== undefined)
-  //   .map(group => group as Required<Group>)
-  //   .map((group, index) => [group, index] as const);
-
-  // for (const [{ uri, name }, index] of withUris) {
-  //   console.log(index, 'parsing uri', name, uri)
-  //   const lessonsRaw = JSON.parse(JSON.stringify(await schedule.getSchedule(uri)));
-  //   await lessonsRawCollection.insertMany(lessonsRaw);
-  // }
-
-  const lessonsRaw = await lessonsRawCollection.find().toArray();
-  console.log(lessonsRaw.length);
-
-  const lessonsCollection = db.collection<Lesson>('lessons');
-  if (!await lessonsCollection.countDocuments()) {
-    const lessons = mergeLessonsRaw(lessonsRaw);
-    // await lessonsCollection.drop();
-    await lessonsCollection.insertMany(lessons);
+  for (const Handler of handlers) {
+    if (typeof Handler !== 'function') {
+      throw new Error('Each handler must be a constructor function.');
+    }
+    log('Handler', Handler.name, 'starting.');
+    const handler = container.resolve(Handler);
+    await handler.execute();
+    log('Handler', Handler.name, 'sucessfully finished.');
   }
-
-  const teachersCollection = db.collection('teachers');
-  const lessons = await lessonsCollection.find().toArray();
-
-  const teachers = _(lessons)
-    .map(lesson => lesson.groups.map(group => lesson.teacher.map(teacher => [teacher, group] as const)))
-    .flatten()
-    .flatten()
-    .tap(a => console.log(a.length))
-    .groupBy(([teacher]) => teacher)
-    .tap(a => console.log(a.length))
-    .toPairs()
-    .map(([name, groups]) => ({
-      name,
-      groups: _.uniq(groups.map(([, group]) => group)),
-    }))
-    .tap(a => console.log(a.length))
-    .value();
-
-  console.log(teachers);
-
-
-  await teachersCollection.drop();
-  await teachersCollection.insertMany(teachers);
-
-  console.log('Done');
-  await mongo.close();
+  const mongo = container.resolve(MongoService);
+  const timestamp = await mongo.flush();
+  log('New data saved at db', timestamp, '. Next launch in ', environment.collectorIntervalMs, 'ms.');
+  setTimeout(main, environment.collectorIntervalMs);
 }
 
 main();
 
-function mergeLessonsRaw(lessonsRaw: LessonRaw[]) {
-  const groups = groupByWith(lessonsRaw, lessonRaw => _.pick(lessonRaw, ['name', 'dayOfWeek', ' slot', 'classrooms']), _.isEqual);
-  const lessons = groups.map(lessons => ({
-    ...lessons[0],
-    classrooms: _.uniq(lessons.flatMap(lesson => lesson.classrooms)),
-    teacher: _.uniq(lessons.flatMap(lesson => lesson.teacher)),
-    groups: _.uniq(lessons.flatMap(lesson => lesson.groups)),
-    weekType: _.uniq(lessons.flatMap(lesson => lesson.weekType)),
-  } as Lesson));
-  return lessons;
-}
+// const schedule = container.resolve(ScheduleService);
+// const mongo = await new MongoClient('mongodb://localhost:27018').connect();
+// const date = getDate();
 
-// TODO: Move to separate NPM Package (for example as lodash plugin)
-function groupByWith<T, TComparable>(collection: T[], project: (elem: T) => TComparable = _.identity, cmp: (a: TComparable, b: TComparable) => boolean = _.isEqual) {
-  // console.log(collection);
-  const map = new Map<T, TComparable>(_.map(collection, elem => [elem, project(elem)]));
-  const groups = [] as T[][];
-  for (const [elem, index] of collection.map((elem, index) => [elem, index] as const)) {
-    if (index % 100 === 0) {
-      console.log(index);
-    }
-    const comparable = map.get(elem)!;
-    const group = groups.find(([groupElem]) => cmp(map.get(groupElem)!, comparable));
-    if (group) {
-      group.push(elem);
-    } else {
-      groups.push([elem]);
-    }
-  }
-  return groups;
-}
+// const date = '2022-5-12';
+// const db = mongo.db(date);
+// await db.dropDatabase(); // TODO: Remove after data merge logic is implemented
+
+// const groups = await schedule.getGroupsUris();
+// const groupsCollection = db.collection<Group>('groups');
+// await groupsCollection.insertMany(groups);
+
+// const lessonsRawCollection = db.collection<LessonRaw>('lessons-row'); // TODO: Fix DB name
+// const withUris = groups
+//   .filter(group => group.uri !== undefined)
+//   .map(group => group as Required<Group>)
+//   .map((group, index) => [group, index] as const);
+
+// for (const [{ uri, name }, index] of withUris) {
+//   console.log(index, 'parsing uri', name, uri)
+//   const lessonsRaw = JSON.parse(JSON.stringify(await schedule.getSchedule(uri)));
+//   await lessonsRawCollection.insertMany(lessonsRaw);
+// }
+
+// const lessonsRaw = await lessonsRawCollection.find().toArray();
+// console.log(lessonsRaw.length);
+
+// const lessonsCollection = db.collection<Lesson>('lessons');
+// if (!await lessonsCollection.countDocuments()) {
+//   const lessons = mergeLessonsRaw(lessonsRaw);
+//   // await lessonsCollection.drop();
+//   await lessonsCollection.insertMany(lessons);
+// }
+
+// const teachersCollection = db.collection('teachers');
+// const lessons = await lessonsCollection.find().toArray();
+
+// const teachers = _(lessons)
+//   .map(lesson => lesson.groups.map(group => lesson.teacher.map(teacher => [teacher, group] as const)))
+//   .flatten()
+//   .flatten()
+//   .tap(a => console.log(a.length))
+//   .groupBy(([teacher]) => teacher)
+//   .tap(a => console.log(a.length))
+//   .toPairs()
+//   .map(([name, groups]) => ({
+//     name,
+//     groups: _.uniq(groups.map(([, group]) => group)),
+//   }))
+//   .tap(a => console.log(a.length))
+//   .value();
+
+// console.log(teachers);
+
+
+// await teachersCollection.drop();
+// await teachersCollection.insertMany(teachers);
+
+// console.log('Done');
+// await mongo.close();
+
+// main();
