@@ -1,0 +1,1 @@
+export type ClassroomName = `${number}${'л' | 'э' | 'с' | 'ю' | ''}` | 'Каф' | `${number}.${number}`;

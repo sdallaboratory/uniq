@@ -1,5 +1,7 @@
 // TODO: Refactor this file (split to separate)
 
+import { WeekType } from "./time/week-type";
+
 // export interface GroupScheduleUri {
 //     name: string;
 //     uri: string;
@@ -41,7 +43,7 @@
 
 export interface WeekInfo {
     number: number;
-    weekName: string;
+    weekName: WeekType;
 }
 
 // export type WeekType = 'numerator' | 'denominator';

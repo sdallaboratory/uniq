@@ -1,3 +1,3 @@
 import { Time } from "./time";
 
-export type timeRange = `${Time} - ${Time}`;
+export type TimeRange = `${Time} - ${Time}`;
