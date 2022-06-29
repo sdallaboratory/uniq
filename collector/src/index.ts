@@ -1,6 +1,6 @@
 import 'reflect-metadata';
-import { container, InjectionToken } from 'tsyringe';
 import './polyfills/fetch';
+import { container, InjectionToken } from 'tsyringe';
 import { CollectGroupsHandler } from './handlers.ts/collect-groups.handler';
 import { MongoService } from './services/mongo.service';
 import { environment } from '@solovevserg/uniq-shared/dist/environemnt';

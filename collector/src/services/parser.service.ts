@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import { isNotNill } from '@solovevserg/uniq-shared/dist/utils/is-not-nill';
 import { timeRangeToSlot } from '@solovevserg/uniq-shared/dist/data/time-range-to-slot';
 import { environment } from '@solovevserg/uniq-shared/dist/environemnt';
 import { IGroup } from '@solovevserg/uniq-shared/dist/models/group/group.interface';
