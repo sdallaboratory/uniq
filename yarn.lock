@@ -134,6 +134,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@solovevserg/uniq-shared@workspace:shared"
   dependencies:
+    class-transformer: ^0.5.1
+    reflect-metadata: ^0.1.13
     typescript: ^4.7.3
   languageName: unknown
   linkType: soft
@@ -822,6 +824,13 @@ __metadata:
   version: 2.0.0
   resolution: "ci-info@npm:2.0.0"
   checksum: 3b374666a85ea3ca43fa49aa3a048d21c9b475c96eb13c133505d2324e7ae5efd6a454f41efe46a152269e9b6a00c9edbe63ec7fa1921957165aae16625acd67
+  languageName: node
+  linkType: hard
+
+"class-transformer@npm:^0.5.1":
+  version: 0.5.1
+  resolution: "class-transformer@npm:0.5.1"
+  checksum: f191c8b4cc4239990f5efdd790cabdd852c243ed66248e39f6616a349c910c6eed2d9fd1fbf7ee6ea89f69b4f1d0b493b27347fe0cd0ae26b47c3745a805b6d3
   languageName: node
   linkType: hard
 
