@@ -3,7 +3,8 @@
   "scripts": {
     "start": "yarn install && yarn build && yarn dev",
     "dev": "yarn workspaces foreach -pi run dev",
-    "build": "yarn workspaces foreach -pti run build"
+    "build": "yarn workspaces foreach -pti run build",
+    "docker": "docker compose down --rmi local && docker compose build --no-cache && docker compose up -d"
   },
   "author": "Sergei Solovev (http://solovevserg.github.io/), Arina Kalinina",
   "description": "Handy schedule app for BMSTU students",
@@ -11,8 +12,7 @@
   "workspaces": {
     "packages": [
       "shared",
-      "collector",
-      "api"
+      "collector"
     ]
   }
 }
