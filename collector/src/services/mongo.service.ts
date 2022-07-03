@@ -3,6 +3,7 @@ import { Collection, Db, MongoClient } from 'mongodb';
 import { CollectionName } from '@solovevserg/uniq-shared/dist/models/db/collection-name';
 import { CollectionNameToDocumentMap } from '@solovevserg/uniq-shared/dist/models/db/collection-name-to-document-map';
 import { environment } from '@solovevserg/uniq-shared/dist/environemnt';
+import { prepareCollectionName } from '@solovevserg/uniq-shared/dist/utils/prepare-collection-name';
 
 @singleton()
 export class MongoService {
@@ -39,7 +40,7 @@ export class MongoService {
 
     public async flush() {
         const draftDb = await this.getDraftDb();
-        const timestamp = new Date().toISOString().replace(/[^\d]+/g, '-');
+        const timestamp = prepareCollectionName(new Date());
         await this.renameDb(draftDb, timestamp);
         return timestamp;
     }

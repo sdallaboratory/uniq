@@ -8,27 +8,44 @@ import { CollectGroupsScheduleHandler } from './handlers.ts/collect-groups-sched
 import { MergeLessonsHandler } from './handlers.ts/merge-lessons.handler';
 import { Handler } from './handlers.ts/handler.interface';
 import { log } from '@solovevserg/uniq-shared/dist/logging/log';
+import { TerminateHandlersChainError } from '@solovevserg/uniq-shared/dist/errors';
+import prettyPrintMs from 'pretty-print-ms';
+import { ExtractTeachersHandler } from './handlers.ts/extract-teachers.handlers';
 
 const handlers = [
   CollectGroupsHandler,
   CollectGroupsScheduleHandler,
   MergeLessonsHandler,
+  ExtractTeachersHandler,
 ] as InjectionToken<Handler>[];
 
 async function main() {
-  for (const Handler of handlers) {
-    if (typeof Handler !== 'function') {
-      throw new Error('Each handler must be a constructor function.');
+  try {
+    for (const Handler of handlers) {
+      if (typeof Handler !== 'function') {
+        throw new Error('Each handler must be a constructor function.');
+      }
+      log('Handler', Handler.name, 'detected. Resolving.');
+      const handler = container.resolve(Handler);
+      log('Handler', Handler.name, 'instantiated. Starting execution.');
+      await handler.execute();
+      log('Handler', Handler.name, 'sucessfully finished.');
     }
-    log('Handler', Handler.name, 'starting.');
-    const handler = container.resolve(Handler);
-    await handler.execute();
-    log('Handler', Handler.name, 'sucessfully finished.');
+    const mongo = container.resolve(MongoService);
+    const timestamp = await mongo.flush();
+    log('New data saved at db', timestamp);
+  } catch (error) {
+    if (error instanceof TerminateHandlersChainError) {
+      log('Occured error have leaded to graceful handler chain termination. Error:', error.message);
+      setTimeout(main, environment.collectorIntervalMs);
+      const time = prettyPrintMs(environment.collectorIntervalMs);
+      log('Next launch in', time, '.');
+    } else {
+      log('Unexpected error occured. Error:', error);
+      main();
+      log('Restarting the handlers chain.');
+    }
   }
-  const mongo = container.resolve(MongoService);
-  const timestamp = await mongo.flush();
-  log('New data saved at db', timestamp, '. Next launch in ', environment.collectorIntervalMs, 'ms.');
-  setTimeout(main, environment.collectorIntervalMs);
 }
 
 main();

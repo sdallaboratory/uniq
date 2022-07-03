@@ -1,5 +1,6 @@
 import { environment } from "@solovevserg/uniq-shared/dist/environemnt";
 import { log } from "@solovevserg/uniq-shared/dist/logging/log";
+import { TerminateHandlersChainError } from "@solovevserg/uniq-shared/dist/errors";
 import { injectable } from "tsyringe";
 import { LoaderService } from "../services/loader.service";
 import { MongoService } from "../services/mongo.service";
@@ -26,6 +27,9 @@ export class CollectGroupsHandler implements Handler {
         const document = await this.loader.loadGroups();
         log('Parsing groups list from HTML');
         const groups = await this.parser.parseGroups(document);
+        if (!groups.length) {
+            throw new TerminateHandlersChainError(`No groups detected. It seems like ${environment.BMSTU_ORIGIN} currently doesn't provide groups' schedule.`);
+        }
         log('Saving', groups.length, 'parsed groups to database.');
         await groupsCollection.insertMany(groups);
     }

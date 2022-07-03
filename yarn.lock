@@ -91,6 +91,7 @@ __metadata:
     mongodb: ^4.7.0
     node-fetch: ^2.6.1
     nodemon: ^2.0.12
+    pretty-print-ms: ^1.0.5
     reflect-metadata: ^0.1.13
     ts-node: ^10.2.1
     tsyringe: ^4.6.0
@@ -2076,6 +2077,13 @@ __metadata:
   version: 2.0.0
   resolution: "prepend-http@npm:2.0.0"
   checksum: 7694a9525405447662c1ffd352fcb41b6410c705b739b6f4e3a3e21cf5fdede8377890088e8934436b8b17ba55365a615f153960f30877bf0d0392f9e93503ea
+  languageName: node
+  linkType: hard
+
+"pretty-print-ms@npm:^1.0.5":
+  version: 1.0.5
+  resolution: "pretty-print-ms@npm:1.0.5"
+  checksum: 02ffbbd89d83217f304af9e5d550c79d012a2c551865378ad3b40efc79cfe9eecd7cfce93eb138d3451117b4f694379befca3d64be33aa729393b5a9b5851dfd
   languageName: node
   linkType: hard
 
