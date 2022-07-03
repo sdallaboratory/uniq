@@ -1,4 +1,6 @@
 import { log } from "@solovevserg/uniq-shared/dist/logging/log";
+import { GroupName } from "@solovevserg/uniq-shared/dist/models/group/group-name";
+import { TeacherName } from "@solovevserg/uniq-shared/dist/models/teacher/teacher-name";
 import { ITeacher } from "@solovevserg/uniq-shared/dist/models/teacher/teacher.interface";
 import { isNotNill } from "@solovevserg/uniq-shared/dist/utils/is-not-nill";
 import _ from "lodash";
@@ -20,18 +22,26 @@ export class ExtractTeachersHandler implements Handler {
             log('Teachers are already extracted. Skipping extracting logic.');
             return;
         }
-        
+
         log('Retrieving lessons from the database.')
         const lessonsCollection = await this.mongo.collection('lessons');
         const lessons = await lessonsCollection.find().toArray();
-        
+
         log('Mapping lessons to teachers.')
         const teachers = _(lessons)
-            .map(lesson => lesson.teacher)
-            .filter(isNotNill)
-            .uniq()
-            .map(name => ({ name } as ITeacher))
-            .value();
+            .flatMap(lesson => lesson.groups.map(group => [lesson.teacher, group] as const))
+            .filter(([teacher]) => isNotNill(teacher))
+            .map(pair => pair as [TeacherName, GroupName])
+            .groupBy(([teacher]) => teacher)
+            .toPairs()
+            .map(([name, pairs]) => ({
+                name,
+                groups: _(pairs)
+                    .map(([teacher, group]) => group)
+                    .uniq()
+                    .value(),
+            } as ITeacher))
+            .value()
 
         log('Saving', teachers.length, 'teachers to the database.');
         await teachersCollection.insertMany(teachers);
