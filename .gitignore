@@ -19,6 +19,9 @@
 **/!.vscode/launch.json
 **/!.vscode/extensions.json
 
-# temporary data
+# Temporary data
 **/temp
 **/.data
+
+# Environemnt Secrets
+.env

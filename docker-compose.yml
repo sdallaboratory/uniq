@@ -8,12 +8,16 @@ services:
       - ${PROXY_EXPOSED_PORT}:80
     depends_on:
       - mongo-express
+    env_file:
+      - .env
 
   collector:
     build: collector
     restart: always
     depends_on:
       - mongo
+    env_file:
+      - .env
 
   mongo:
     image: mongo
