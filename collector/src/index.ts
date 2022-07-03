@@ -11,12 +11,14 @@ import { log } from '@solovevserg/uniq-shared/dist/logging/log';
 import { TerminateHandlersChainError } from '@solovevserg/uniq-shared/dist/errors';
 import prettyPrintMs from 'pretty-print-ms';
 import { ExtractTeachersHandler } from './handlers.ts/extract-teachers.handlers';
+import { ExtractClassroomsHandler } from './handlers.ts/extract-classrooms.handler';
 
 const handlers = [
   CollectGroupsHandler,
   CollectGroupsScheduleHandler,
   MergeLessonsHandler,
   ExtractTeachersHandler,
+  ExtractClassroomsHandler
 ] as InjectionToken<Handler>[];
 
 async function main() {

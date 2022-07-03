@@ -7,7 +7,7 @@ import { MongoService } from "../services/mongo.service";
 import { Handler } from "./handler.interface";
 
 @injectable()
-export class ExtractTeachersHandler implements Handler {
+export class ExtractClassroomsHandler implements Handler {
 
     constructor(
         private readonly mongo: MongoService,
