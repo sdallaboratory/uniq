@@ -26,15 +26,15 @@ export class ExtractTeachersHandler implements Handler {
         const lessons = await lessonsCollection.find().toArray();
         
         log('Mapping lessons to classrooms.')
-        const teachers = _(lessons)
+        const classrooms = _(lessons)
             .flatMap(lesson => lesson.classrooms)
             .filter(isNotNill)
             .uniq()
             .map(name => ({ name } as IClassroom))
             .value();
 
-        log('Saving', teachers.length, 'teachers to the database.');
-        await classroomsCollection.insertMany(teachers);
+        log('Saving', classrooms.length, 'classrooms to the database.');
+        await classroomsCollection.insertMany(classrooms);
     }
 
 }
