@@ -18,7 +18,7 @@ const handlers = [
   CollectGroupsScheduleHandler,
   MergeLessonsHandler,
   ExtractTeachersHandler,
-  ExtractClassroomsHandler
+  ExtractClassroomsHandler,
 ] as InjectionToken<Handler>[];
 
 async function main() {
@@ -51,66 +51,3 @@ async function main() {
 }
 
 main();
-
-// const schedule = container.resolve(ScheduleService);
-// const mongo = await new MongoClient('mongodb://localhost:27018').connect();
-// const date = getDate();
-
-// const date = '2022-5-12';
-// const db = mongo.db(date);
-// await db.dropDatabase(); // TODO: Remove after data merge logic is implemented
-
-// const groups = await schedule.getGroupsUris();
-// const groupsCollection = db.collection<Group>('groups');
-// await groupsCollection.insertMany(groups);
-
-// const lessonsRawCollection = db.collection<LessonRaw>('lessons-row'); // TODO: Fix DB name
-// const withUris = groups
-//   .filter(group => group.uri !== undefined)
-//   .map(group => group as Required<Group>)
-//   .map((group, index) => [group, index] as const);
-
-// for (const [{ uri, name }, index] of withUris) {
-//   console.log(index, 'parsing uri', name, uri)
-//   const lessonsRaw = JSON.parse(JSON.stringify(await schedule.getSchedule(uri)));
-//   await lessonsRawCollection.insertMany(lessonsRaw);
-// }
-
-// const lessonsRaw = await lessonsRawCollection.find().toArray();
-// console.log(lessonsRaw.length);
-
-// const lessonsCollection = db.collection<Lesson>('lessons');
-// if (!await lessonsCollection.countDocuments()) {
-//   const lessons = mergeLessonsRaw(lessonsRaw);
-//   // await lessonsCollection.drop();
-//   await lessonsCollection.insertMany(lessons);
-// }
-
-// const teachersCollection = db.collection('teachers');
-// const lessons = await lessonsCollection.find().toArray();
-
-// const teachers = _(lessons)
-//   .map(lesson => lesson.groups.map(group => lesson.teacher.map(teacher => [teacher, group] as const)))
-//   .flatten()
-//   .flatten()
-//   .tap(a => console.log(a.length))
-//   .groupBy(([teacher]) => teacher)
-//   .tap(a => console.log(a.length))
-//   .toPairs()
-//   .map(([name, groups]) => ({
-//     name,
-//     groups: _.uniq(groups.map(([, group]) => group)),
-//   }))
-//   .tap(a => console.log(a.length))
-//   .value();
-
-// console.log(teachers);
-
-
-// await teachersCollection.drop();
-// await teachersCollection.insertMany(teachers);
-
-// console.log('Done');
-// await mongo.close();
-
-// main();
