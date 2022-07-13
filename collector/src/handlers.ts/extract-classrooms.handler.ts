@@ -30,6 +30,7 @@ export class ExtractClassroomsHandler implements Handler {
             .flatMap(lesson => lesson.classrooms)
             .filter(isNotNill)
             .uniq()
+            .orderBy()
             .map(name => ({ name } as IClassroom))
             .value();
 

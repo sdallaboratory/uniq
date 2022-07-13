@@ -41,6 +41,7 @@ export class ExtractTeachersHandler implements Handler {
                     .uniq()
                     .value(),
             } as ITeacher))
+            .orderBy(({name}) => name)
             .value()
 
         log('Saving', teachers.length, 'teachers to the database.');
