@@ -8,12 +8,7 @@ import { prepareCollectionName } from '@solovevserg/uniq-shared/dist/utils/prepa
 @singleton()
 export class MongoService {
 
-    public readonly defaultDatabase = 'draft';
-
-    private async getAdminDb() {
-        const client = await this.getClient();
-        return client.db().admin();
-    }
+    private readonly defaultDatabase = 'draft';
 
     public async getDraftDb() {
         const client = await this.getClient();
@@ -32,7 +27,7 @@ export class MongoService {
         const newDb = client.db(newDbName);
         for (const draftCollection of await oldDb.collections()) {
             const documents = await draftCollection.find().toArray();
-            newDb.collection(draftCollection.collectionName).insertMany(documents);
+            await newDb.collection(draftCollection.collectionName).insertMany(documents);
         }
         await oldDb.dropDatabase();
         return newDb;
