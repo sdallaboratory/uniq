@@ -4,6 +4,7 @@ import { IGroup } from "../group/group.interface";
 import { ILesson } from "../lesson/lesson.interface";
 import { IRawLesson } from "../lesson/raw-lesson.interface";
 import { ITeacher } from "../teacher/teacher.interface";
+import { Week } from "../time/week";
 
 export interface CollectionNameToDocumentMap {
   'groups': IGroup,
@@ -11,4 +12,5 @@ export interface CollectionNameToDocumentMap {
   'raw-lessons': IRawLesson,
   'teachers': ITeacher,
   'classrooms': IClassroom,
+  'current-week': Week,
 }
