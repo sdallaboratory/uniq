@@ -1,6 +1,7 @@
 import { log } from "@solovevserg/uniq-shared/dist/logging/log";
 import { ILesson } from "@solovevserg/uniq-shared/dist/models/lesson/lesson.interface";
 import { IRawLesson } from "@solovevserg/uniq-shared/dist/models/lesson/raw-lesson.interface";
+import { Group } from "@solovevserg/uniq-shared/dist/models/group/group";
 import { isNotNill } from "@solovevserg/uniq-shared/dist/utils/is-not-nill";
 import _ from "lodash";
 import { injectable } from "tsyringe";
@@ -36,9 +37,10 @@ export class MergeLessonsHandler implements Handler {
     }
 
     private lessonIdentity(lesson: IRawLesson) {
-        const { name, slot, classroomString, teacher, type } = lesson;
+        const { name, slot, classroomString, teacher, type, group } = lesson;
         const { dayOfWeek, lessonNumber } = slot;
-        return { name, teacher, classroomString, dayOfWeek, lessonNumber, type };
+        const faculty = Group.fromPlain({ name: group }).parse().faculty;
+        return { name, teacher, classroomString, dayOfWeek, lessonNumber, type, faculty };
     }
 
     private mergeRawLessonsGroup(lessons: IRawLesson[]) {
@@ -83,8 +85,8 @@ export class MergeLessonsHandler implements Handler {
         const map = new Map<T, TComparable>(_.map(collection, elem => [elem, project(elem)]));
         const groups = [] as T[][];
         for (const [elem, index] of collection.map((elem, index) => [elem, index] as const)) {
-            if (index % 100 === 0) {
-                console.log(index);
+            if (index % 1000 === 0) {
+                log(`Continuing iteration (element at index ${index} of ${collection.length}.)`);
             }
             const comparable = map.get(elem)!;
             const group = groups.find(([groupElem]) => cmp(map.get(groupElem)!, comparable));
