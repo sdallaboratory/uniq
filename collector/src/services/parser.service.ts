@@ -6,7 +6,10 @@ import { IRawLesson } from '@solovevserg/uniq-shared/dist/models/lesson/raw-less
 import { TimeRange } from '@solovevserg/uniq-shared/dist/models/time/time-range';
 import { DayOfWeek } from '@solovevserg/uniq-shared/dist/models/time/day-of-week';
 import { WeekType } from '@solovevserg/uniq-shared/dist/models/time/week-type';
+import { RawWeekType } from '@solovevserg/uniq-shared/dist/models/time/raw-week-type';
 import { log } from '@solovevserg/uniq-shared/dist/logging/log';
+import { Week } from '@solovevserg/uniq-shared/dist/models/time/week';
+import { GroupName } from '@solovevserg/uniq-shared/dist/models/group/group-name';
 
 export default class ParserService {
 
@@ -21,35 +24,41 @@ export default class ParserService {
         return groupsUris;
     }
 
-    // public parseCurrentWeek(document: Document) {
-    //     const weekElem = document.querySelector('.page-header h4 i');
-    //     if (!weekElem) {
-    //         return {
-    //             number: 0,
-    //             weekName: 'Не учебная',
-    //         };
-    //     }
-    //     const text = weekElem.textContent || '';
-    //     const week = {
-    //         number: +/\d+/.exec(text)![0],
-    //         weekName: _.last(text.split(' '))!,
-    //     };
-    //     return week;
-    // }
+    public parseCurrentWeek(document: Document) {
+        const weekElem = document.querySelector('.page-header h4 i');
+        if (!weekElem?.textContent) {
+            throw new Error('Error while parsing current week. No information presented in HTML.');
+        }
 
-    // private parseGroupName(document: Document) {
-    //     return document.querySelector('.page-header h1')!.textContent!.split(' ')[1];
-    // }
+        const map: Record<RawWeekType, WeekType> = {
+            'числитель': WeekType.Numerator,
+            'знаменатель': WeekType.Denominator,
+        } as const;
 
-    // private readonly groupRegex = /(?<group>(?<department>(?<faculty>[а-яёА-ЯЁ]+)\d?\d?)+-(?<semester>\d\d?)(?<number>\d)(?<form>[бмаБМА]?))/i;
+        const [number, , type] = weekElem.textContent?.split(' ');
+
+        const week = {
+            number: Number(number),
+            type: map[type as RawWeekType],
+        } as Week;
+
+        return week;
+    }
 
     public parseGroupSchedule(document: Document) {
-        const scheduleHeader = document.querySelector('h1')?.textContent!;
-        const group = scheduleHeader.split(' ')[1].trim();
+        const group = this.parseGroupName(document);
         log('Parsing group', group, 'schedule.');
         return [...document.querySelectorAll('.hidden-xs tbody')].flatMap(
             day => this.parseDaySchedule(day as HTMLTableElement)
         ).map(lesson => ({ ...lesson, group } as IRawLesson));
+    }
+
+    private parseGroupName(document: Document) {
+        const group = document.querySelector('.page-header h1')?.textContent?.split(' ')[1].trim();
+        if (!group) {
+            throw new Error('No group name presented in HTML.');
+        }
+        return group as GroupName;
     }
 
     private parseDaySchedule(tbody: HTMLTableElement) {

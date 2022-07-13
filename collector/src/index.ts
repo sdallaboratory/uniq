@@ -12,6 +12,7 @@ import { TerminateHandlersChainError } from '@solovevserg/uniq-shared/dist/error
 import prettyPrintMs from 'pretty-print-ms';
 import { ExtractTeachersHandler } from './handlers.ts/extract-teachers.handlers';
 import { ExtractClassroomsHandler } from './handlers.ts/extract-classrooms.handler';
+import { CollectCurrentWeekHandler } from './handlers.ts/collect-current-week.handler';
 
 const handlers = [
   CollectGroupsHandler,
@@ -19,6 +20,7 @@ const handlers = [
   MergeLessonsHandler,
   ExtractTeachersHandler,
   ExtractClassroomsHandler,
+  CollectCurrentWeekHandler,
 ] as InjectionToken<Handler>[];
 
 async function main() {
