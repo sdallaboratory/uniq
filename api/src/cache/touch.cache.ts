@@ -1,4 +1,3 @@
-import { singleton } from 'tsyringe';
 import { CacheClass } from 'memory-cache';
 import { Request, NextFunction, Response, Send } from 'express';
 

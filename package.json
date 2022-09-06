@@ -12,7 +12,8 @@
   "workspaces": {
     "packages": [
       "shared",
-      "collector"
+      "collector",
+      "api"
     ]
   }
 }

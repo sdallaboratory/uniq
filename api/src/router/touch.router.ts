@@ -1,22 +1,18 @@
 import { Router } from 'express';
-import { autoInjectable } from 'tsyringe';
+import { injectable } from 'tsyringe';
 import TouchController from '../controller/touch.controller';
-import { environment } from '../environment';
 
-@autoInjectable()
+@injectable()
 export default class AppRouter {
 
     constructor(
         private controller: TouchController,
     ) {
-        this.routes.get(
-            '/groups',
-            this.controller.searchGroups.bind(this.controller),
-        );
-        this.routes.get(
-            '/lessons',
-            this.controller.getLessons.bind(this.controller),
-        );
+        // this.routes.get(
+        //     '/groups',
+        //     this.controller.getGroups.bind(this.controller),
+        // );
+        // this.routes
         // this.routes.get(
         //     '/schedule/current-week',
         //     this.cache.cacheMiddleware(environment.CACHE_DURATION).bind(this.cache),
@@ -29,7 +25,15 @@ export default class AppRouter {
         // );
     }
 
-    public readonly routes = Router();
+    public readonly routes = Router()
+        .get(
+            '/groups',
+            this.controller.getGroups.bind(this.controller),
+        )
+        .get(
+            '/lessons',
+            this.controller.getLessons.bind(this.controller),
+        );
 
 
 }
