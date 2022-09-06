@@ -1,7 +1,7 @@
 import { GroupName } from "../group/group-name";
 import { TeacherName } from "./teacher-name";
 
-export interface ITeacher {
+export interface Teacher {
     name: TeacherName;
     groups: GroupName[];
 }

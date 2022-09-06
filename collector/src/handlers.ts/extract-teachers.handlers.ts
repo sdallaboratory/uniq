@@ -1,7 +1,7 @@
 import { log } from "@solovevserg/uniq-shared/dist/logging/log";
 import { GroupName } from "@solovevserg/uniq-shared/dist/models/group/group-name";
 import { TeacherName } from "@solovevserg/uniq-shared/dist/models/teacher/teacher-name";
-import { ITeacher } from "@solovevserg/uniq-shared/dist/models/teacher/teacher.interface";
+import { Teacher } from "@solovevserg/uniq-shared/dist/models/teacher/teacher";
 import { isNotNill } from "@solovevserg/uniq-shared/dist/utils/is-not-nill";
 import _ from "lodash";
 import { injectable } from "tsyringe";
@@ -40,7 +40,7 @@ export class ExtractTeachersHandler implements Handler {
                     .map(([teacher, group]) => group)
                     .uniq()
                     .value(),
-            } as ITeacher))
+            } as Teacher))
             .orderBy(({name}) => name)
             .value()
 

@@ -20,7 +20,7 @@ export class CollectGroupsScheduleHandler implements Handler {
         const handledGroupsSet = new Set(handledGroups);
         const groups = await groupsCollection.find({ path: { $exists: true } }).toArray();
         if(handledGroupsSet.size === groups.length) {
-            log('All groups schedules are already collected. Any collectiing logic will be skipped.');
+            log('All groups schedules are already collected. Any collecting logic will be skipped.');
             return;
         }
         log('Collecting schedules for ', groups.length ,'groups.');

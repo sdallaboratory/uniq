@@ -1,5 +1,5 @@
 import { log } from "@solovevserg/uniq-shared/dist/logging/log";
-import { IClassroom } from "@solovevserg/uniq-shared/dist/models/classroom/classroom.interface";
+import { Classroom } from "@solovevserg/uniq-shared/dist/models/classroom/classroom";
 import { isNotNill } from "@solovevserg/uniq-shared/dist/utils/is-not-nill";
 import _ from "lodash";
 import { injectable } from "tsyringe";
@@ -31,7 +31,7 @@ export class ExtractClassroomsHandler implements Handler {
             .filter(isNotNill)
             .uniq()
             .orderBy()
-            .map(name => ({ name } as IClassroom))
+            .map(name => ({ name } as Classroom))
             .value();
 
         log('Saving', classrooms.length, 'classrooms to the database.');

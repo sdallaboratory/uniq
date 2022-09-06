@@ -1,9 +1,6 @@
-import { slotToTimeRange } from "../../../data/slot-to-time-range";
-import { timeRangeToSlot } from "../../../data/time-range-to-slot";
-import { TimeRange } from "../time-range";
 import { LessonNumber } from "./lesson-number";
 
-export class UnboundTimeSlot {
+export class UnboundTimeSlotClass {
 
     constructor(
         public readonly lessonNumber: LessonNumber,

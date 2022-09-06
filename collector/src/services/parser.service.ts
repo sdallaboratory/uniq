@@ -1,8 +1,8 @@
 import _ from 'lodash';
 import { timeRangeToSlot } from '@solovevserg/uniq-shared/dist/data/time-range-to-slot';
 import { environment } from '@solovevserg/uniq-shared/dist/environemnt';
-import { IGroup } from '@solovevserg/uniq-shared/dist/models/group/group.interface';
-import { IRawLesson } from '@solovevserg/uniq-shared/dist/models/lesson/raw-lesson.interface';
+import { Group } from '@solovevserg/uniq-shared/dist/models/group/group';
+import { RawLesson } from '@solovevserg/uniq-shared/dist/models/lesson/raw-lesson';
 import { TimeRange } from '@solovevserg/uniq-shared/dist/models/time/time-range';
 import { DayOfWeek } from '@solovevserg/uniq-shared/dist/models/time/day-of-week';
 import { WeekType } from '@solovevserg/uniq-shared/dist/models/time/week-type';
@@ -15,12 +15,12 @@ export default class ParserService {
 
     public parseGroups(document: Document) {
         const origin = environment.BMSTU_ORIGIN;
-        const anchors = document.querySelectorAll('.list-group .panel .btn-group a');
+        const anchors = document.querySelector('.list-group')?.querySelectorAll('.panel .btn-group a') || [];
         const groupsUris = [...anchors].map(anchor => ({
             _uri: `${origin}${anchor.getAttribute('href')}`,
             path: anchor.getAttribute('href') || undefined,
             name: anchor.textContent!.split(/\s/).join(''),
-        } as IGroup));
+        } as Group));
         return groupsUris;
     }
 
@@ -50,7 +50,7 @@ export default class ParserService {
         log('Parsing group', group, 'schedule.');
         return [...document.querySelectorAll('.hidden-xs tbody')].flatMap(
             day => this.parseDaySchedule(day as HTMLTableElement)
-        ).map(lesson => ({ ...lesson, group } as IRawLesson));
+        ).map(lesson => ({ ...lesson, group } as RawLesson));
     }
 
     private parseGroupName(document: Document) {
@@ -80,7 +80,7 @@ export default class ParserService {
             // .filter(tr => tr.querySelector('td > span')?.textContent)
             .flatMap(elem => {
                 const timeRangeElement = elem.firstElementChild!;
-                const timeRange = timeRangeElement.textContent! as TimeRange;
+                const timeRange = timeRangeElement.textContent?.trim() as TimeRange; // TODO: Add type guard
                 const lessonNumber = timeRangeToSlot.get(timeRange)?.lessonNumber;
                 if (!lessonNumber) {
                     throw new Error('Incorrect time range provided. Ensure you provide correct table element.');

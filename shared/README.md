@@ -8,47 +8,38 @@
 
 ## Классы моделей
 
-Для каждой модели создаётся интерфейс и класс:
+Для каждой модели создаётся интерфейс, а для некоторых ещё и класс:
 
-1. интерфейс для БД/DTO (`ILessson` в `lesson.interface.ts`)
-2. класс контейнер для работы на клиенте (`Lesson` в `lesson.class.ts`)
+1. интерфейс для БД/DTO (`Lessson` в `lesson.ts`)
+2. класс для реализации дополнительной логики, связанной с типом (`LessonClass` в `lesson.class.ts`)
 
 ```typescript
-interface ILesson {
+interface Lesson {
     groups: string[];
-    classrooms: IClassroom[];
+    classrooms: Classroom[];
     slot: number;
 }
 
-class Lesson implements ILesson {
+class LessonClass implements Lesson {
 
     groups: string[];
     
-    @Type(() => Classroom)
-    classrooms: Classroom[];
+    @Type(() => ClassroomClass)
+    classrooms: ClassroomClass[];
 
-    @Type(() => Slot)
-    slot: Slot;
+    @Type(() => SlotClass)
+    slot: SlotClass;
 
-    public static create(lesson: ILesson): Lesson {
-        if (lesson instanceof Lesson) {
+    public static create(lesson: Lesson): LessonClass {
+        if (lesson instanceof LessonClass) {
             throw new Error('Provided source object must be plain, not class.');
         }
         return plainToClass(Lesson, lesson);
     }
 
-    constructor(lesson: ILesson) {
-        plainToClassFromExist(this, lesson) // Если не заработает, сделать private
+    constructor(lesson: Lesson) {
+        plainToClassFromExist(this, lesson) // Если не заработает, сделать private constructor() {}
     }
-}
-
-type ISLot = number;
-
-class Slot extends Number {
-    public get startTime(): Time; // 08:30
-    public get endTime(): Time;
-    public get timeRange(): TimeRange; // 08:30 - 10:05
-    public static fromStartTime(startTime: string): Slot;
 }
 
 type IGroup = string;

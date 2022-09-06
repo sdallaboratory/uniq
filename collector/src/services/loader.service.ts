@@ -11,7 +11,7 @@ export class LoaderService {
      * @param origin Default `environment.BMSTU_ORIGIN`.
      * @returns Parsed HTML page as Document object.
      */
-    private async loadHtml(path: string, origin = environment.BMSTU_ORIGIN) {
+    private async loadHtmlDocument(path: string, origin = environment.BMSTU_ORIGIN) {
         if (path[0] !== '/') {
             throw new Error(`path must start with leading slash. E.g '/shcedule/list'`);
         }
@@ -24,10 +24,10 @@ export class LoaderService {
 
     async loadGroups() {
         const path = `/schedule/list`;
-        return this.loadHtml(path);
+        return this.loadHtmlDocument(path);
     }
 
     async loadGroupSchedule(groupSchedulePath: string) {
-        return this.loadHtml(groupSchedulePath);
+        return this.loadHtmlDocument(groupSchedulePath);
     }
 }

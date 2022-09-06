@@ -1,7 +1,7 @@
 import { log } from "@solovevserg/uniq-shared/dist/logging/log";
-import { ILesson } from "@solovevserg/uniq-shared/dist/models/lesson/lesson.interface";
-import { IRawLesson } from "@solovevserg/uniq-shared/dist/models/lesson/raw-lesson.interface";
-import { Group } from "@solovevserg/uniq-shared/dist/models/group/group";
+import { Lesson } from "@solovevserg/uniq-shared/dist/models/lesson/lesson";
+import { RawLesson } from "@solovevserg/uniq-shared/dist/models/lesson/raw-lesson";
+import { GroupClass } from "@solovevserg/uniq-shared/dist/models/group/group.class";
 import { isNotNill } from "@solovevserg/uniq-shared/dist/utils/is-not-nill";
 import _ from "lodash";
 import { injectable } from "tsyringe";
@@ -28,7 +28,7 @@ export class MergeLessonsHandler implements Handler {
         await lessonsCollection.insertMany(lessons);
     }
 
-    private mergeRawLessons(rawLessons: IRawLesson[]) {
+    private mergeRawLessons(rawLessons: RawLesson[]) {
         log('Grouping', rawLessons.length, ' raw lessons.');
         const groups = this.groupByWith(rawLessons, this.lessonIdentity);
         log('Merging', groups.length, 'raw lessons groups.');
@@ -36,14 +36,14 @@ export class MergeLessonsHandler implements Handler {
         return lessons;
     }
 
-    private lessonIdentity(lesson: IRawLesson) {
+    private lessonIdentity(lesson: RawLesson) {
         const { name, slot, classroomString, teacher, type, group } = lesson;
         const { dayOfWeek, lessonNumber } = slot;
-        const faculty = Group.fromPlain({ name: group }).parse().faculty;
+        const faculty = GroupClass.fromPlain({ name: group }).parse().faculty;
         return { name, teacher, classroomString, dayOfWeek, lessonNumber, type, faculty };
     }
 
-    private mergeRawLessonsGroup(lessons: IRawLesson[]) {
+    private mergeRawLessonsGroup(lessons: RawLesson[]) {
         // TODO: Add checks for correctness of the lessons group.
         const name = lessons[0].name;
         const type = lessons[0].type?.replace(/\(|\)|\s+/g, '');
@@ -71,7 +71,7 @@ export class MergeLessonsHandler implements Handler {
             .value();
 
         // TODO: Add calls of analyser service for intellectual analysis of values.
-        return { name, groups, slot: { ...slot, weekTypes }, classrooms, teacher, type } as ILesson;
+        return { name, groups, slot: { ...slot, weekTypes }, classrooms, teacher, type } as Lesson;
     }
 
     /**
