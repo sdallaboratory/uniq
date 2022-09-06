@@ -12,7 +12,7 @@ export default class AppController {
     ) { }
 
     public async getGroups(req: Request, res: Response) {
-        const query = req.query.query || ''; // TODO: 
+        const query = req.query.query || '';
         if (typeof query !== 'string' || !isRegex(query)) {
             res.status(400).send(new Error('The query for groups is incorrect'));
             return;
@@ -23,7 +23,7 @@ export default class AppController {
     }
 
     public async getTeachers(req: Request, res: Response) {
-        const query = req.query.query || ''; // TODO: 
+        const query = req.query.query || '';
         if (typeof query !== 'string' || !isRegex(query)) {
             res.status(400).send(new Error('The query for teachers is incorrect'));
             return;
@@ -34,19 +34,21 @@ export default class AppController {
     }
 
     public async getLessons(req: Request, res: Response) {
-        const query = req.query.query || ''; // TODO: 
+        const query = req.query.query || '';
         if (typeof query !== 'string' || !isRegex(query)) {
             res.status(400).send(new Error('The query parameter for lessons is incorrect. It must be valid regex.'));
             return;
         }
         const lessonsCollection = await this.mongo.collection('lessons');
         const lessons = await lessonsCollection.find({ name: { $regex: query, $options: 'i' } }).toArray();
-        res.status(200).send(lessons.map(lesson => _.omit(lesson, '_id')));
+        const withoutInternalIds = lessons.map(lesson => _.omit(lesson, '_id'))
+        res.status(200).send(withoutInternalIds);
     }
 
     public async getCurrentWeek(req: Request, res: Response) {
         const currentWeekCollection = await this.mongo.collection('current-week');
         const week = await currentWeekCollection.findOne();
-        res.send(_.omit(week, '_id'));
+        const withoutId = _.omit(week, '_id');
+        res.send(withoutId);
     }
 }
