@@ -103,7 +103,7 @@ export default class ParserService {
             return undefined;
         }
 
-        const [type, name, classroomString, teacher] = [...lessonElement.querySelectorAll('i, span')]
+        const [type, name, classroomString, teacherString] = [...lessonElement.querySelectorAll('i, span')]
             .map(elem => elem.textContent || undefined)
             .map(elem => elem?.trim().replace(/\s+/g, ' '));
 
@@ -111,7 +111,7 @@ export default class ParserService {
             throw new Error('Lesson must contain name. Check wheter you have provided correct table cell element.');
         }
 
-        return { name, type, classroomString, teacher };
+        return { name, type, classroomString, teacherString };
     }
 
 }

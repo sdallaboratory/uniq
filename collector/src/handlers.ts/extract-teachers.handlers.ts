@@ -29,8 +29,9 @@ export class ExtractTeachersHandler implements Handler {
 
         log('Mapping lessons to teachers.')
         const teachers = _(lessons)
-            .flatMap(lesson => lesson.groups.map(group => [lesson.teacher, group] as const))
-            .filter(([teacher]) => isNotNill(teacher))
+            .flatMap(lesson => lesson.teachers?.map(teacher => [teacher, lesson.groups] as const))
+            .filter(isNotNill)
+            .flatMap(([teacher, groups]) => groups.map(group => [teacher, group] as const))
             .map(pair => pair as [TeacherName, GroupName])
             .groupBy(([teacher]) => teacher)
             .toPairs()

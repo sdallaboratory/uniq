@@ -7,6 +7,9 @@ import _ from "lodash";
 import { injectable } from "tsyringe";
 import { MongoService } from "../services/mongo.service";
 import { Handler } from "./handler.interface";
+import { TeacherName } from "@solovevserg/uniq-shared/dist/models/teacher/teacher-name";
+import { ClassroomName } from "@solovevserg/uniq-shared/dist/models/classroom/classroom-name";
+import { GroupName } from "@solovevserg/uniq-shared/dist/models/group/group-name";
 
 @injectable()
 export class MergeLessonsHandler implements Handler {
@@ -37,10 +40,10 @@ export class MergeLessonsHandler implements Handler {
     }
 
     private lessonIdentity(lesson: RawLesson) {
-        const { name, slot, classroomString, teacher, type, group } = lesson;
+        const { name, slot, classroomString, teacherString, type, group } = lesson;
         const { dayOfWeek, lessonNumber } = slot;
         const faculty = GroupClass.fromPlain({ name: group }).parse().faculty;
-        return { name, teacher, classroomString, dayOfWeek, lessonNumber, type, faculty };
+        return { name, teacherString, classroomString, dayOfWeek, lessonNumber, type, faculty };
     }
 
     private mergeRawLessonsGroup(lessons: RawLesson[]) {
@@ -58,20 +61,20 @@ export class MergeLessonsHandler implements Handler {
             .flatMap(lesson => lesson.classroomString?.split(/\s*,\s*|\s+/))
             .filter(isNotNill)
             .uniq()
-            .value();
+            .value() as ClassroomName[];
 
-        const teacher = _(lessons)
-            .flatMap(lesson => lesson.teacher)
+        const teachers = _(lessons)
+            .flatMap(lesson => lesson.teacherString?.split(', '))
             .filter(isNotNill)
-            .first();
+            .value() as TeacherName[]
 
         const groups = _(lessons)
             .map(lesson => lesson.group)
             .uniq()
-            .value();
+            .value() as GroupName[];
 
         // TODO: Add calls of analyser service for intellectual analysis of values.
-        return { name, groups, slot: { ...slot, weekTypes }, classrooms, teacher, type } as Lesson;
+        return { name, groups, slot: { ...slot, weekTypes }, classrooms, teachers, type } as Lesson;
     }
 
     /**
@@ -86,7 +89,7 @@ export class MergeLessonsHandler implements Handler {
         const groups = [] as T[][];
         for (const [elem, index] of collection.map((elem, index) => [elem, index] as const)) {
             if (index % 1000 === 0) {
-                log(`Continuing iteration (element at index ${index} of ${collection.length}.)`);
+                log(`Continueing iteration (element at index ${index} of ${collection.length}.)`);
             }
             const comparable = map.get(elem)!;
             const group = groups.find(([groupElem]) => cmp(map.get(groupElem)!, comparable));

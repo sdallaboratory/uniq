@@ -10,6 +10,6 @@ export interface Lesson {
     slot: TimeSlot;
     type?: LessonType;
 
-    teacher?: TeacherName;
+    teachers?: TeacherName[];
     classrooms?: ClassroomName[];
 }

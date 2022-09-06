@@ -7,6 +7,6 @@ export interface RawLesson {
     group: GroupName;
     slot: TimeSlot;
     type: string;
-    teacher?: TeacherName;
+    teacherString?: TeacherName;
     classroomString?: string;
 }

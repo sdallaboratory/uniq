@@ -16,7 +16,7 @@ export class LessonClass {
     @Type(() => TimeSlotClass)
     slot!: TimeSlotClass;
 
-    teacher?: TeacherName;
+    teachers?: TeacherName[];
 
     type?: LessonType;
 
