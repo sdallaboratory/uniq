@@ -1,13 +1,11 @@
 import { Request, Response } from 'express';
 import { injectable } from 'tsyringe';
-import { MongoService } from '../service/mongo.service';
+import { MongoService } from '../services/mongo.service';
 import { isRegex } from '@solovevserg/uniq-shared/dist/utils/is-regexp';
-// import { Group } from '@solovevserg/uniq-shared/dist/models/group/group';
-// import { Lesson } from '@solovevserg/uniq-shared/dist/models/lesson/lesson';
 import _ from 'lodash';
 
 @injectable()
-export default class TouchController {
+export default class AppController {
 
     constructor(
         private readonly mongo: MongoService,
@@ -38,7 +36,7 @@ export default class TouchController {
     public async getLessons(req: Request, res: Response) {
         const query = req.query.query || ''; // TODO: 
         if (typeof query !== 'string' || !isRegex(query)) {
-            res.status(400).send(new Error('The query for lessons is incorrect'));
+            res.status(400).send(new Error('The query parameter for lessons is incorrect. It must be valid regex.'));
             return;
         }
         const lessonsCollection = await this.mongo.collection('lessons');
@@ -46,15 +44,9 @@ export default class TouchController {
         res.status(200).send(lessons.map(lesson => _.omit(lesson, '_id')));
     }
 
-    // public async getCurrentWeek(req: Request, res: Response) {
-    //     const week = await this.schedule.getCurrentWeek();
-    //     res.send(week);
-    // }
-
-    // public async getGroupSchedule(req: Request, res: Response) {
-    //     const groupName = req.params.groupName.toUpperCase();
-    //     const groupSchedule = await this.schedule.getSchedule(groupName);
-    //     res.send(groupSchedule);
-    // }
-
+    public async getCurrentWeek(req: Request, res: Response) {
+        const currentWeekCollection = await this.mongo.collection('current-week');
+        const week = await currentWeekCollection.findOne();
+        res.send(_.omit(week, '_id'));
+    }
 }
