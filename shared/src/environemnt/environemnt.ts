@@ -10,7 +10,7 @@ export const environment = {
     PORT: 3000,
     CACHE_DURATION: 30,
     BMSTU_ORIGIN: 'https://lks.bmstu.ru',
-    collectorIntervalMs: 1000 * 60 * 60 * 8, // 1 time per 8 hours  
+    collectorIntervalMs: 1000 * 60 * 60 * 8, // 1 time per 8 hours
     ...(isProduction ? prodEnvironment : devEnvironemtn),
     ...env,
 }

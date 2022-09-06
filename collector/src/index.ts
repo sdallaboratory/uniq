@@ -23,6 +23,8 @@ const handlers = [
   CollectCurrentWeekHandler,
 ] as InjectionToken<Handler>[];
 
+const time = prettyPrintMs(environment.collectorIntervalMs);
+
 async function main() {
   try {
     for (const Handler of handlers) {
@@ -38,11 +40,11 @@ async function main() {
     const mongo = container.resolve(MongoService);
     const timestamp = await mongo.flush();
     log('New data saved at db', timestamp);
+    setTimeout(main, environment.collectorIntervalMs);
   } catch (error) {
     if (error instanceof TerminateHandlersChainError) {
       log('Occured error have leaded to graceful handler chain termination. Error:', error.message);
       setTimeout(main, environment.collectorIntervalMs);
-      const time = prettyPrintMs(environment.collectorIntervalMs);
       log('Next launch in', time, '.');
     } else {
       log('Unexpected error occured. Error:', error);
@@ -52,4 +54,10 @@ async function main() {
   }
 }
 
-main();
+if(!environment.skipCollectOnStart) {
+  log('Running collector.');
+  main();
+} else {
+  log('Skipping collector on start due to config. Next launch in', time, '.');
+  setTimeout(main, environment.collectorIntervalMs);
+}
