@@ -20,6 +20,7 @@
     "@angular/platform-browser-dynamic": "^14.0.0",
     "@angular/router": "^14.0.0",
     "@angular/service-worker": "^14.0.0",
+    "@solovevserg/uniq-shared": "workspace:^",
     "@taiga-ui/addon-mobile": "^2.62.2",
     "@taiga-ui/addon-table": "^2.62.2",
     "@taiga-ui/cdk": "^2.62.2",
@@ -28,8 +29,11 @@
     "@taiga-ui/kit": "^2.62.2",
     "@tinkoff/ng-dompurify": "3.0.0",
     "dompurify": "2.2.9",
+    "observable-webworker": "^4.0.1",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
+    "typescript-memoize": "^1.1.0",
+    "uuid": "^9.0.0",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
@@ -38,6 +42,7 @@
     "@angular/compiler-cli": "^14.0.0",
     "@types/dompurify": "2.2.3",
     "@types/jasmine": "~4.0.0",
+    "@types/uuid": "^8.3.4",
     "http-server": "^14.1.1",
     "jasmine-core": "~4.3.0",
     "karma": "~6.4.0",

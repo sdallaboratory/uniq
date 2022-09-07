@@ -2236,7 +2236,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@solovevserg/uniq-shared@^1.0.0, @solovevserg/uniq-shared@^1.0.1, @solovevserg/uniq-shared@workspace:shared":
+"@solovevserg/uniq-shared@^1.0.0, @solovevserg/uniq-shared@^1.0.1, @solovevserg/uniq-shared@workspace:^, @solovevserg/uniq-shared@workspace:shared":
   version: 0.0.0-use.local
   resolution: "@solovevserg/uniq-shared@workspace:shared"
   dependencies:
@@ -2874,6 +2874,13 @@ __metadata:
   version: 2.0.2
   resolution: "@types/trusted-types@npm:2.0.2"
   checksum: 3371eef5f1c50e1c3c07a127c1207b262ba65b83dd167a1c460fc1b135a3fb0c97b9f508efebd383f239cc5dd5b7169093686a692a501fde9c3f7208657d9b0d
+  languageName: node
+  linkType: hard
+
+"@types/uuid@npm:^8.3.4":
+  version: 8.3.4
+  resolution: "@types/uuid@npm:8.3.4"
+  checksum: 6f11f3ff70f30210edaa8071422d405e9c1d4e53abbe50fdce365150d3c698fe7bbff65c1e71ae080cbfb8fded860dbb5e174da96fdbbdfcaa3fb3daa474d20f
   languageName: node
   linkType: hard
 
@@ -3985,6 +3992,7 @@ __metadata:
     "@angular/platform-browser-dynamic": ^14.0.0
     "@angular/router": ^14.0.0
     "@angular/service-worker": ^14.0.0
+    "@solovevserg/uniq-shared": "workspace:^"
     "@taiga-ui/addon-mobile": ^2.62.2
     "@taiga-ui/addon-table": ^2.62.2
     "@taiga-ui/cdk": ^2.62.2
@@ -3994,6 +4002,7 @@ __metadata:
     "@tinkoff/ng-dompurify": 3.0.0
     "@types/dompurify": 2.2.3
     "@types/jasmine": ~4.0.0
+    "@types/uuid": ^8.3.4
     dompurify: 2.2.9
     http-server: ^14.1.1
     jasmine-core: ~4.3.0
@@ -4002,9 +4011,12 @@ __metadata:
     karma-coverage: ~2.2.0
     karma-jasmine: ~5.1.0
     karma-jasmine-html-reporter: ~2.0.0
+    observable-webworker: ^4.0.1
     rxjs: ~7.5.0
     tslib: ^2.3.0
     typescript: ~4.7.2
+    typescript-memoize: ^1.1.0
+    uuid: ^9.0.0
     zone.js: ~0.11.4
   languageName: unknown
   linkType: soft
@@ -7852,6 +7864,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"observable-webworker@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "observable-webworker@npm:4.0.1"
+  dependencies:
+    tslib: ^2.0.0
+  peerDependencies:
+    rxjs: ">=6.4.0"
+  checksum: 5e39dce35fa467f6f50d96ee9930c69b3998f392b9b8b88d22042a533192ad54ecf98d7f203c1ffc21f568ffc99ce42d29010a48ec3e1af185ce790884ebafee
+  languageName: node
+  linkType: hard
+
 "obuf@npm:^1.0.0, obuf@npm:^1.1.2":
   version: 1.1.2
   resolution: "obuf@npm:1.1.2"
@@ -10164,7 +10187,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:2.4.0, tslib@npm:^2.1.0, tslib@npm:^2.3.0":
+"tslib@npm:2.4.0, tslib@npm:^2.0.0, tslib@npm:^2.1.0, tslib@npm:^2.3.0":
   version: 2.4.0
   resolution: "tslib@npm:2.4.0"
   checksum: 8c4aa6a3c5a754bf76aefc38026134180c053b7bd2f81338cb5e5ebf96fefa0f417bff221592bf801077f5bf990562f6264fecbc42cd3309b33872cb6fc3b113
@@ -10233,6 +10256,13 @@ __metadata:
   dependencies:
     is-typedarray: ^1.0.0
   checksum: 99c11aaa8f45189fcfba6b8a4825fd684a321caa9bd7a76a27cf0c7732c174d198b99f449c52c3818107430b5f41c0ccbbfb75cb2ee3ca4a9451710986d61a60
+  languageName: node
+  linkType: hard
+
+"typescript-memoize@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "typescript-memoize@npm:1.1.0"
+  checksum: a7d3357adbf421972619397c5db562664f3d440629a5afbb510c09e23e3a176424f600c3c853addc2234a9b7be3e61dae984771c057a76980fab67fb30c70d64
   languageName: node
   linkType: hard
 
@@ -10470,6 +10500,15 @@ __metadata:
   bin:
     uuid: dist/bin/uuid
   checksum: 5575a8a75c13120e2f10e6ddc801b2c7ed7d8f3c8ac22c7ed0c7b2ba6383ec0abda88c905085d630e251719e0777045ae3236f04c812184b7c765f63a70e58df
+  languageName: node
+  linkType: hard
+
+"uuid@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "uuid@npm:9.0.0"
+  bin:
+    uuid: dist/bin/uuid
+  checksum: 8dd2c83c43ddc7e1c71e36b60aea40030a6505139af6bee0f382ebcd1a56f6cd3028f7f06ffb07f8cf6ced320b76aea275284b224b002b289f89fe89c389b028
   languageName: node
   linkType: hard
 

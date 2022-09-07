@@ -1,16 +1,19 @@
 <tui-root>
 
   <router-outlet></router-outlet>
-  <button tuiButton icon="tuiIconSettings">
-    Нажми меня!
-  </button>
-  <form action="">
-    <tui-input>
-      Type an email
-      <input tuiTextfield type="email">
-    </tui-input>
-  </form>
+  <div class="content">
 
-  {{lessons | async | json}}
+    <button tuiButton icon="tuiIconSettings">
+      Нажми меня!
+    </button>
+    <form [formGroup]="form">
+      <tui-input [formControl]="form.controls.group">
+        Type an email
+        <input tuiTextfield type="email">
+      </tui-input>
+    </form>
+
+    {{lessons | async | json}}
+  </div>
 
 </tui-root>
