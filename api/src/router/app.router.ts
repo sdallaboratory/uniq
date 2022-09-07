@@ -23,7 +23,7 @@ export default class AppRouter {
             this.controller.getTeachers.bind(this.controller),
         )
         .get(
-            '/current-week',
+            '/calendar/weeks/current',
             this.controller.getCurrentWeek.bind(this.controller),
         );
 
