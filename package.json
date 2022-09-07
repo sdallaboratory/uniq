@@ -13,7 +13,8 @@
     "packages": [
       "shared",
       "collector",
-      "api"
+      "api",
+      "client"
     ]
   }
 }
