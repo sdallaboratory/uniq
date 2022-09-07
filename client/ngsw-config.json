@@ -30,6 +30,7 @@
       "name": "lessons-data",
       "installMode": "lazy",
       "updateMode": "prefetch",
+      "maxAge": "1d",
       "resources": {
         "urls": [
           "/api/lessons"
